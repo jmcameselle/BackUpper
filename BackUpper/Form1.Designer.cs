@@ -64,7 +64,7 @@
             this.lblPatron.Name = "lblPatron";
             this.lblPatron.Size = new System.Drawing.Size(426, 13);
             this.lblPatron.TabIndex = 3;
-            this.lblPatron.Text = "Patron No seleccionado";
+            this.lblPatron.Text = "Patrón No seleccionado";
             this.lblPatron.Click += new System.EventHandler(this.lblPatron_Click);
             // 
             // btnPatron
@@ -73,7 +73,7 @@
             this.btnPatron.Name = "btnPatron";
             this.btnPatron.Size = new System.Drawing.Size(75, 23);
             this.btnPatron.TabIndex = 2;
-            this.btnPatron.Text = "PATRON";
+            this.btnPatron.Text = "PATRÓN";
             this.btnPatron.UseVisualStyleBackColor = true;
             this.btnPatron.Click += new System.EventHandler(this.btnPatron_Click);
             // 
@@ -112,7 +112,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(454, 261);
+            this.ClientSize = new System.Drawing.Size(552, 261);
             this.Controls.Add(this.btnCopiar);
             this.Controls.Add(this.lblDestino);
             this.Controls.Add(this.btnDestino);

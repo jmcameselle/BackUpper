@@ -24,24 +24,71 @@ namespace BackUpper
         {
             fbr.ShowDialog();
             lblOrigen.Text = fbr.SelectedPath;
-            if(lblOrigen.Text!="") bOriSel = true;
+            if (lblOrigen.Text != "")
+            {
+                if ((lblOrigen.Text == lblPatron.Text) || (lblOrigen.Text == lblDestino.Text)) {
+                    lblOrigen.Text = "Origen No seleccionado";
+                    bOriSel = false;
+                    MessageBox.Show("No puede seleccionar dos fuentes con el mismo directorio", "CAUTION", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;                
+                }
+                bOriSel = true;
+            }
+            else
+            {
+                lblOrigen.Text = "Origen No seleccionado";
+                bOriSel = false;
+            }
             if (bOriSel && bPatSel && bDestSel) btnCopiar.Enabled = true;
+            else btnCopiar.Enabled = false;
         }
 
         private void btnPatron_Click(object sender, EventArgs e)
         {
             fbr.ShowDialog();
             lblPatron.Text = fbr.SelectedPath;
-            if (lblPatron.Text!= "") bPatSel=true;
+            if (lblPatron.Text != "")
+            {
+                if ((lblPatron.Text == lblOrigen.Text) || (lblPatron.Text == lblDestino.Text))
+                {
+                    lblPatron.Text = "Patrón No seleccionado";
+                    bPatSel = false;
+                    MessageBox.Show("No puede seleccionar dos fuentes con el mismo directorio", "CAUTION", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
+                bPatSel = true;
+            }
+            else
+            {
+                lblPatron.Text = "Patrón No seleccionado";
+                bPatSel = false;
+            }
             if (bOriSel && bPatSel && bDestSel) btnCopiar.Enabled = true;
+            else btnCopiar.Enabled = false;
         }
 
         private void btnDestino_Click(object sender, EventArgs e)
         {
             fbr.ShowDialog();
             lblDestino.Text = fbr.SelectedPath;
-            if (lblDestino.Text != "") bDestSel = true;
+            if (lblDestino.Text != "")
+            {
+                if ((lblDestino.Text == lblOrigen.Text) || (lblDestino.Text == lblPatron.Text))
+                {
+                    lblDestino.Text = "Destino No seleccionado";
+                    bDestSel = false;
+                    MessageBox.Show("No puede seleccionar dos fuentes con el mismo directorio", "CAUTION", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
+                bDestSel = true;
+            }
+            else
+            {
+                lblDestino.Text = "Destino No seleccionado";
+                bDestSel = false;
+            }
             if (bOriSel && bPatSel && bDestSel) btnCopiar.Enabled = true;
+            else btnCopiar.Enabled = false;
         }
 
         private void lblOrigen_Click(object sender, EventArgs e)
@@ -73,26 +120,40 @@ namespace BackUpper
 
         private void DoCopyFromOrigyn(DirectoryInfo dPat)
         {
-           //ruta en la que nos encontramos a partir de la raiz del patron
+           //ruta en la que nos encontramos a partir de la raiz del Patrón
            string sCurrentRelativePath = dPat.FullName.Replace(lblPatron.Text,"");
-           FileInfo[] oFiles = dPat.GetFiles();
-            //crea el nuevo path en destino
-            Directory.CreateDirectory(lblDestino.Text + sCurrentRelativePath);
-            foreach (FileInfo oFile in oFiles)
+           bool bExistPath = Directory.Exists(lblDestino.Text + sCurrentRelativePath);
+            try
             {
 
-                //selecciona el mismo archivo de el origen
-                FileInfo fOri = new FileInfo(lblOrigen.Text + sCurrentRelativePath + "\\" + oFile.Name);
-                if (fOri.Exists)
+               FileInfo[] oFiles = dPat.GetFiles();
+                foreach (FileInfo oFile in oFiles)
                 {
-                    //lo copia en el path destino
-                    fOri.CopyTo(lblDestino.Text + sCurrentRelativePath + "\\" + fOri.Name);
+
+                    //selecciona el mismo archivo de el origen
+                    FileInfo fOri = new FileInfo(lblOrigen.Text + sCurrentRelativePath + "\\" + oFile.Name);
+                    if (fOri.Exists)
+                    {
+                        //crea el nuevo path en destino si aún no existe. Se hace aquí para solo crearlo en caso de
+                        //que haya almenos una correspondencia
+                        if (!bExistPath)
+                        {
+                            Directory.CreateDirectory(lblDestino.Text + sCurrentRelativePath);
+                            bExistPath = true;
+                        }
+                        //lo copia en el path destino
+                        fOri.CopyTo(lblDestino.Text + sCurrentRelativePath + "\\" + fOri.Name);
+                    }
+                }             
+                //procesa las subcarpetas 
+                foreach (DirectoryInfo dSubFolder in dPat.GetDirectories())
+                {
+                   DoCopyFromOrigyn(dSubFolder);
                 }
-            }             
-            //procesa las subcarpetas 
-            foreach (DirectoryInfo dSubFolder in dPat.GetDirectories())
+            }
+            catch (UnauthorizedAccessException ex)
             {
-               DoCopyFromOrigyn(dSubFolder);
+                //sin permisos para la selección
             }
         }
 
